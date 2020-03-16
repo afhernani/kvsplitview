@@ -35,8 +35,17 @@ class Splitfloat(HoverBehavior, Image):
         pass
 
     def on_touch_down(self, touch):
+        # (x, y)=self.to_widget(touch.x, touch.y)
+        ''' if self.collide_point(x, y):
+            if touch.is_double_tap:
+                print('double touch', 'action here', self.source)
+                return True '''
         if self.collide_point(touch.x, touch.y):
             self.touched = True
+            if touch.is_double_tap:
+                print('double:', self.source)
+                from utility import lunch_video
+                lunch_video(self.source)
             return True
         return super(Splitfloat, self).on_touch_down(touch)
 
