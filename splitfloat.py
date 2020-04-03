@@ -216,7 +216,7 @@ class SampleApp(App):
                     fex = os.path.abspath(os.path.join(dirthumbs, fe))
                     print(fex)
                     self.files.append(fex)
-                    Clock.schedule_once(partial(self.update_box_imagen, str(fex)))
+                    Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
                     # self.box.ids.box.add_widget(Splitfloat(source=fex, anim_delay= 1))
         #threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True).start()
         #print('files:', self.files,', len:', len(self.files))
