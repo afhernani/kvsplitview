@@ -256,7 +256,8 @@ class SampleApp(App):
         self.dirpathmovies = config.get('Setings', 'dirpathmovies')
         if os.path.exists(self.dirpathmovies):
             # inicializa la lista con directorio duardao
-            threading.Thread(target=self.load_thread, daemon=True).start()
+            # threading.Thread(target=self.load_thread, daemon=True).start()
+            self.load_thread()
 
     def on_stop(self):
         '''
@@ -301,7 +302,6 @@ class SampleApp(App):
         config.read(self.setingfile)
         try:
             self.sizewindow = config.get('Setings', 'sizewindow')
-        
             w, h, t, l = self.get_sizewindow(self.sizewindow)
             # print(w, h, t, l)
             Window.size = (int(w), int(h))
