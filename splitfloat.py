@@ -87,6 +87,11 @@ Builder.load_string('''
             size_hint_x:None
             width: '60sp'
             on_release:app.get_running_app().show_load()
+        Label:
+            id:lbnota
+            text:'...'
+            size_hint_x:None
+            width: '60sp'
 <Splitfloat>:
     anim_delay: 1 if self.hovered else -1
     allow_stretch: True
@@ -203,8 +208,9 @@ class SampleApp(App):
 
     def load_thread(self, *args):
         from functools import partial
+        self.total = 0
         dirpathmovies = self.dirpathmovies
-        self.title='Splitfloat :: ' + dirpathmovies
+        self.title = 'Splitfloat :: ' + dirpathmovies
         print('dirpathmovies:', dirpathmovies)
         exten = ('.gif', '.GIF')
         dirthumbs = os.path.join(dirpathmovies, 'Thumbails')
@@ -216,18 +222,27 @@ class SampleApp(App):
                     fex = os.path.abspath(os.path.join(dirthumbs, fe))
                     print(fex)
                     self.files.append(fex)
-                    Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
+                    # Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
                     # self.box.ids.box.add_widget(Splitfloat(source=fex, anim_delay= 1))
-        #threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True).start()
-        #print('files:', self.files,', len:', len(self.files))
+        self.title += r' :: ' + str(len(self.files))
+        threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True).start()
 
-    """ def start_load_thread(self, *files):
-        for file in files:
-            self.update_box_imagen(file) """
-
+    def start_load_thread(self, files=[]):
+        from time import sleep
+        try:
+            for file in files:
+                self.update_box_imagen(file)
+                sleep(0.5)
+        except:
+            pritn('exception in start load thread from app')
+    total = 0
     @mainthread
     def update_box_imagen(self, file, *largs):
         self.box.ids.box.add_widget(Splitfloat(source=file, anim_delay= 1))
+        title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
+        print('>> long: ', title)
+        self.total += 1
+        self.box.ids.lbnota.text = str(self.total)
 
     def get_init_status(self):
         '''
