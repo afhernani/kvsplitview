@@ -235,7 +235,9 @@ class SampleApp(App):
                 sleep(0.5)
         except:
             pritn('exception in start load thread from app')
+    
     total = 0
+    
     @mainthread
     def update_box_imagen(self, file, *largs):
         self.box.ids.box.add_widget(Splitfloat(source=file, anim_delay= 1))
