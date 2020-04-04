@@ -270,7 +270,6 @@ class SampleApp(App):
         with open(self.setingfile, 'w') as configfile:
             config.write(configfile)
         print('Write config file')
-        self.stop()
     
     sizewindow =''
     
