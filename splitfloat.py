@@ -266,9 +266,83 @@ class SampleApp(App):
         config = configparser.RawConfigParser()
         config.add_section('Setings')
         config.set('Setings', 'dirpathmovies', self.dirpathmovies)
+        config.set('Setings', 'sizewindow', self.sizewindow)
         with open(self.setingfile, 'w') as configfile:
             config.write(configfile)
         print('Write config file')
+        self.stop()
+    
+    sizewindow =''
+    
+    def on_resize(self, instancie, width, height):
+        '''Event called when the window is resized'''
+        print(f'window.size {str(width)}, {str(height)}')
+        print(f'instancie: {instancie.top}, {instancie.left}')
+        self.sizewindow = str(width)+'x'+ str(height) + 'x' + str(instancie.top) + 'x' + str(instancie.left)
+        print('variable: '+ self.sizewindow)
+        
+    def get_sizewindow(self, cadena):
+        '''descomponer la cadena de dimensiones de la ventana'''
+        return cadena.split('x')
+
+    from kivy.core.window import Window
+
+    def on_start(self, **kvargs):
+        ''' lunch after build and start window '''
+        Window.bind(on_resize=self.on_resize)
+        # Window.bind(on_motion=self.on_motion_thumbapp)
+        # Window.bind(on_draw=self.on_draw_thumbapp)
+        Window.bind(on_request_close=self.on_request_close)
+        # self._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'text')
+        Window.bind(on_keyboard=self.on_keyboard)
+        # print('on_start')
+        if not os.path.exists(self.setingfile):
+            return
+        config = configparser.RawConfigParser()
+        config.read(self.setingfile)
+        try:
+            self.sizewindow = config.get('Setings', 'sizewindow')
+        
+            w, h, t, l = self.get_sizewindow(self.sizewindow)
+            # print(w, h, t, l)
+            Window.size = (int(w), int(h))
+            Window.Top = int(t)
+            Window.left = int(l)
+        except Exception:
+            print('exception load sizewindow')
+
+    def on_request_close(self, *args):
+        self.textpopup(title='Exit', text='Are you sure?')
+        return True
+
+    def textpopup(self, title='', text=''):
+        """Open the pop-up with the name.
+ 
+        :param title: title of the pop-up to open
+        :type title: str
+        :param text: main text of the pop-up to open
+        :type text: str
+        :rtype: None
+        """
+        box = BoxLayout(orientation='vertical')
+        box.add_widget(Label(text=text))
+        mybutton = Button(text='OK', size_hint=(1, 0.25))
+        box.add_widget(mybutton)
+        popup = Popup(title=title, content=box, size_hint=(None, None), size=(300, 200))
+        mybutton.bind(on_release=self.stop) # manda detener la aplicación
+        popup.open()
+
+    def on_keyboard(self, keyboard, key, text, modifiers, *args):
+        print(f'{keyboard}, {key}, {text}, {modifiers}, {args}')
+        if key == 'left':
+            self.x -= 10
+        if key == 'right':
+            self.x +=10
+        if key == 'up':
+            self.y +=10
+        if key == 'down':
+            self.y -=10
+        return True
 
 
 if __name__ == '__main__':
