@@ -335,14 +335,6 @@ class SampleApp(App):
 
     def on_keyboard(self, keyboard, key, text, modifiers, *args):
         print(f'{keyboard}, {key}, {text}, {modifiers}, {args}')
-        if key == 'left':
-            self.x -= 10
-        if key == 'right':
-            self.x +=10
-        if key == 'up':
-            self.y +=10
-        if key == 'down':
-            self.y -=10
         return True
 
 
