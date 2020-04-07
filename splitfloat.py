@@ -19,10 +19,12 @@ from kivy.uix.popup import Popup
 from kivy.clock import Clock, mainthread
 from kivy.core.window import Window
 from kivy.config import ConfigParser, Config
+from kivy.graphics import Line
 import configparser
 
 class Splitfloat(HoverBehavior, Image):
     def __init__(self, **kwargs):
+        self.selected = None
         super(Splitfloat, self).__init__(**kwargs)
         # self.source = '629_1000.jpg'
 
@@ -41,6 +43,10 @@ class Splitfloat(HoverBehavior, Image):
                 print('double touch', 'action here', self.source)
                 return True '''
         if self.collide_point(touch.x, touch.y):
+            if not self.selected:
+                self.select()
+            else:
+                self.unselect()
             self.touched = True
             if touch.is_double_tap:
                 print('double:', self.source)
@@ -66,6 +72,23 @@ class Splitfloat(HoverBehavior, Image):
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
         self.anim_delay= -1
+
+    def select(self):
+        print('select()', self.top)
+        if not self.selected:
+            self.ix = self.center_x
+            self.iy = self.center_y
+            with self.canvas.before:
+                # self.Color(rgb=(1,0,0))
+                self.selected = Line(rectangle=
+                    (self.x, self.y, self.width, self.height), dash_offset=2, color=(1,0,0), width=10)
+
+    def unselect(self):
+        print('unselect()')
+        if self.selected:
+            self.canvas.before.remove(self.selected)
+            self.selected = None
+
 
 Builder.load_string('''
 <ContentSplits>:
@@ -234,15 +257,15 @@ class SampleApp(App):
                 self.update_box_imagen(file)
                 sleep(0.5)
         except:
-            pritn('exception in start load thread from app')
+            print('exception in start load thread from app')
     
     total = 0
     
     @mainthread
     def update_box_imagen(self, file, *largs):
-        self.box.ids.box.add_widget(Splitfloat(source=file, anim_delay= 1))
-        title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
-        print('>> long: ', title)
+        self.box.ids.box.add_widget(Splitfloat(source=file, anim_delay= -1))
+        # title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
+        # print('>> long: ', title)
         self.total += 1
         self.box.ids.lbnota.text = str(self.total)
 
