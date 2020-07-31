@@ -21,7 +21,7 @@ from kivy.core.window import Window
 from kivy.config import ConfigParser, Config
 from kivy.graphics import Line
 import configparser
-# from hpopup import Copy, Move, Remove, Rename, Box
+from hpopup import Copy, Move, Remove, Rename, Box
 
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
