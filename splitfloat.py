@@ -21,6 +21,12 @@ from kivy.core.window import Window
 from kivy.config import ConfigParser, Config
 from kivy.graphics import Line
 import configparser
+# from hpopup import Copy, Move, Remove, Rename, Box
+
+__author__='hernani'
+__email__ = 'afhernani@gmail.com'
+__apply__ = 'kvcomic app for gif about viedo in carpet'
+__version__ = 0.1
 
 class Splitfloat(HoverBehavior, Image):
     def __init__(self, **kwargs):
@@ -110,6 +116,11 @@ Builder.load_string('''
             size_hint_x:None
             width: '60sp'
             on_release:app.get_running_app().show_load()
+        Button:
+            text:'Move'
+            size_hint_x:None
+            width:'60sp'
+            on_release:app.get_running_app().move_selected()
         Label:
             id:lbnota
             text:'...'
@@ -208,7 +219,24 @@ class SampleApp(App):
         self.get_init_status()
         return self.box
 
-    def dismiss_popup(self):
+    def selected_splitfloat(self, *args):
+        '''busca los splitfloats selecioado y devuelve una lista con los objetos'''
+        boxes = self.box.ids.box
+        childrens= boxes.children[:]
+        selected =[]
+        for child in childrens:
+            if child.selected:
+                selected.append(child)
+                child.unselect()
+        return selected
+
+    def move_selected(self, *args):
+        '''move splitfloats to ...'''
+        selected = self.selected_splitfloat()
+        for item in selected:
+            print(item.source)
+
+    def dismiss_popup(self, *args):
         self.popup.dismiss()
     
     def show_load(self):
