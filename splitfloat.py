@@ -21,6 +21,7 @@ from kivy.core.window import Window
 from kivy.config import ConfigParser, Config
 from kivy.graphics import Line
 import configparser
+from kivy.properties import StringProperty
 from hpopup import Copy, Move, Remove, Rename, Box
 
 __author__='hernani'
@@ -239,7 +240,7 @@ class SampleApp(App):
             self.path_job =os.path.dirname(all_archives[0].movie)
         for item in all_archives:
             print('selected ->>', item)
-        Copy(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
+        Move(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
         for child in selected: self.box.ids.box.remove_widget(child)
 
     def my_callback(self, instance):
