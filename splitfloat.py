@@ -211,6 +211,7 @@ class SampleApp(App):
     # stop = threading.Event()
     setingfile = 'seting.ini'
     title ='Splitfloat'
+    path_job = StringProperty(None)
     
     def build(self):
         self.files=[]
@@ -233,8 +234,23 @@ class SampleApp(App):
     def move_selected(self, *args):
         '''move splitfloats to ...'''
         selected = self.selected_splitfloat()
+        all_archives = self._createlistselected(selected=selected)
+        if self.path_job is None:
+            self.path_job =os.path.dirname(all_archives[0].movie)
+        for item in all_archives:
+            print('selected ->>', item)
+        Copy(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
+        for child in selected: self.box.ids.box.remove_widget(child)
+
+    def my_callback(self, instance):
+        self.path_job = instance.path
+
+    def _createlistselected(self, selected=[])->[]:
+        todos_los_archivos =  []
         for item in selected:
-            print(item.source)
+            box = Box(picture=item.source)
+            todos_los_archivos.append(box)
+        return todos_los_archivos
 
     def dismiss_popup(self, *args):
         self.popup.dismiss()
