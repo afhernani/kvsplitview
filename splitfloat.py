@@ -122,6 +122,11 @@ Builder.load_string('''
             size_hint_x:None
             width:'60sp'
             on_release:app.get_running_app().move_selected()
+        Button:
+            text:'Copy'
+            size_hint_x:None
+            width:'60sp'
+            on_release:app.get_running_app().copy_selected()
         Label:
             id:lbnota
             text:'...'
@@ -231,6 +236,16 @@ class SampleApp(App):
                 selected.append(child)
                 child.unselect()
         return selected
+
+    def copy_selected(self, *args):
+        '''copy splitfloat to ... '''
+        selected = self.selected_splitfloat()
+        all_archives = self._createlistselected(selected=selected)
+        if self.path_job is None:
+            self.path_job =os.path.dirname(all_archives[0].movie)
+        for item in all_archives:
+            print('selected ->>', item)
+        Copy(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
 
     def move_selected(self, *args):
         '''move splitfloats to ...'''
