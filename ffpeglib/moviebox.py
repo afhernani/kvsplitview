@@ -488,7 +488,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--image', type=int,
                         help='extract from video file a number of images')
     parser.add_argument('-t', '--time', type=int,
-                        help='extract from video file a image at time')         
+                        help='extract from video file a image at time: box -f path_to_file -t time')         
     parser.add_argument('--version', action='version', version='%(prog)s '+str(__version__))
     args = parser.parse_args()
 
