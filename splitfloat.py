@@ -273,6 +273,7 @@ class SampleApp(App):
     
     def show_load(self):
         contenido=LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        contenido.ids.filechooser.path = self.dirpathmovies
         self.popup= Popup(title='Selct Directory', content=contenido, size_hint=(.9,.9))
         self.popup.open()
 
