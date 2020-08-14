@@ -35,9 +35,9 @@ class Splitfloat(HoverBehavior, Image):
         self.selected = None
         self.url = None if url is None else url
         self.moviebox = None
-        self.duration = 0.0
-        self.loop_time = self.interval = 0.0
+        self.duration = self.loop_time = self.interval = 0.0
         self.num_visionado = 15
+        self.thr, self.animation = None, False
         super(Splitfloat, self).__init__(**kwargs)
         if self.url:
             self.moviebox = MovieBox(source=self.url)
@@ -47,6 +47,7 @@ class Splitfloat(HoverBehavior, Image):
             image = self.moviebox.extract_image(time=self.loop_time)
             self.push_image(image=image)
 
+    @mainthread
     def push_image(self, image, *args):
         self.image = None if image is None else image
         if self.image is None:
@@ -97,15 +98,26 @@ class Splitfloat(HoverBehavior, Image):
     def on_enter(self, *args):
         print("You are in, though this point", self.border_point, self.source)
         # self.anim_delay= 1
-        self.interval += self.loop_time
-        if self.interval > self.duration:
-            self.interval = self.loop_time
-        image = self.moviebox.extract_image(time=self.interval)
-        self.push_image(image=image)
+        self.animation = True
+        self.thr = threading.Thread(target=self.start_animation, args=(self.url,), daemon=True).start()
+        
+    def start_animation(self, url):
+        # Falta: comprobar la url -
+        from time import sleep
+        while True:    
+            self.interval += self.loop_time
+            if self.interval > self.duration:
+                self.interval = self.loop_time
+            image = self.moviebox.extract_image(time=self.interval)
+            self.push_image(image=image)
+            sleep(0.8)
+            if not self.animation:
+                break
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
         # self.anim_delay= -1
+        self.animation = False
 
     def select(self):
         print('select()', self.top)
