@@ -25,6 +25,8 @@ from kivy.properties import StringProperty
 from hpopup import Copy, Move, Remove, Rename, Box
 from ffpeglib import Boxd, MovieBox
 from kivy.core.image import Image as CoreImage
+from functools import partial
+
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
 __apply__ = 'kvcomic app for gif about viedo in carpet'
@@ -99,25 +101,27 @@ class Splitfloat(HoverBehavior, Image):
         print("You are in, though this point", self.border_point, self.source)
         # self.anim_delay= 1
         self.animation = True
-        self.thr = threading.Thread(target=self.start_animation, args=(self.url,), daemon=True).start()
+        self.thr = threading.Thread(target=self.start_animation, args=(self.url,), daemon=True)
+        self.thr.start()
         
     def start_animation(self, url):
         # Falta: comprobar la url -
         from time import sleep
-        while True:    
+        while self.animation:    
             self.interval += self.loop_time
-            if self.interval > self.duration:
+            if self.interval > self.duration-self.loop_time:
                 self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.interval)
-            self.push_image(image=image)
-            sleep(0.8)
-            if not self.animation:
-                break
+            Clock.schedule_once(partial(self.push_image, image), 1.5)
+            # self.push_image(image=image)
+            sleep(1.5)
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
         # self.anim_delay= -1
+        # if self.thr.isAlive:
         self.animation = False
+            
 
     def select(self):
         print('select()', self.top)
