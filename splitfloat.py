@@ -36,20 +36,26 @@ class Splitfloat(HoverBehavior, Image):
         self.url = None if url is None else url
         self.moviebox = None
         self.duration = 0.0
-        self.loop_time = 0.0
+        self.loop_time = self.interval = 0.0
         self.num_visionado = 15
         super(Splitfloat, self).__init__(**kwargs)
         if self.url:
             self.moviebox = MovieBox(source=self.url)
             self.duration = self.moviebox.datos['time']
             self.loop_time = self.duration/(self.num_visionado + 1)
+            self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.loop_time)
-            image_bytes = io.BytesIO()
-            image.save(image_bytes, 'png')
-            image_bytes.seek(0)
-            self._coreimage = CoreImage(image_bytes, ext='png')
-            self.texture = self._coreimage.texture
+            self.push_image(image=image)
 
+    def push_image(self, image, *args):
+        self.image = None if image is None else image
+        if self.image is None:
+            self.image = self.moviebox.CreateImg()
+        image_bytes = io.BytesIO()
+        self.image.save(image_bytes, 'png')
+        image_bytes.seek(0)
+        self._coreimage = CoreImage(image_bytes, ext='png')
+        self.texture = self._coreimage.texture
 
     def on_press(self):
         # self.source = 'atlas://data/images/defaulttheme/checkbox_on'
@@ -90,11 +96,16 @@ class Splitfloat(HoverBehavior, Image):
 
     def on_enter(self, *args):
         print("You are in, though this point", self.border_point, self.source)
-        self.anim_delay= 1
+        # self.anim_delay= 1
+        self.interval += self.loop_time
+        if self.interval > self.duration:
+            self.interval = self.loop_time
+        image = self.moviebox.extract_image(time=self.interval)
+        self.push_image(image=image)
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
-        self.anim_delay= -1
+        # self.anim_delay= -1
 
     def select(self):
         print('select()', self.top)
