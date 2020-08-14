@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding:UTF-8 -*-
-import os, sys
+import os, sys, io
 import threading
 import kivy
 kivy.require('1.9.0')
@@ -23,17 +23,33 @@ from kivy.graphics import Line
 import configparser
 from kivy.properties import StringProperty
 from hpopup import Copy, Move, Remove, Rename, Box
-
+from ffpeglib import Boxd, MovieBox
+from kivy.core.image import Image as CoreImage
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
 __apply__ = 'kvcomic app for gif about viedo in carpet'
 __version__ = 0.1
 
 class Splitfloat(HoverBehavior, Image):
-    def __init__(self, **kwargs):
+    def __init__(self, url, **kwargs):
         self.selected = None
+        self.url = None if url is None else url
+        self.moviebox = None
+        self.duration = 0.0
+        self.loop_time = 0.0
+        self.num_visionado = 15
         super(Splitfloat, self).__init__(**kwargs)
-        # self.source = '629_1000.jpg'
+        if self.url:
+            self.moviebox = MovieBox(source=self.url)
+            self.duration = self.moviebox.datos['time']
+            self.loop_time = self.duration/(self.num_visionado + 1)
+            image = self.moviebox.extract_image(time=self.loop_time)
+            image_bytes = io.BytesIO()
+            image.save(image_bytes, 'png')
+            image_bytes.seek(0)
+            self._coreimage = CoreImage(image_bytes, ext='png')
+            self.texture = self._coreimage.texture
+
 
     def on_press(self):
         # self.source = 'atlas://data/images/defaulttheme/checkbox_on'
@@ -171,7 +187,8 @@ Builder.load_string('''
                 text:'Load'
                 on_release: root.load(filechooser.path, filechooser.selection)
     
-    ''')
+''')
+
 
 class ContentSplits(BoxLayout):
     files=[]
@@ -180,7 +197,7 @@ class ContentSplits(BoxLayout):
         self.files = files
         for file in self.files:
             # img = Image(source=file, anim_delay=1)
-            self.ids.box.add_widget(Splitfloat(source=file, anim_delay=1))
+            self.ids.box.add_widget(Splitfloat(url=file, anim_delay=1))
     
     def addfile(self):
         print('addfile:', self.files)
@@ -296,14 +313,12 @@ class SampleApp(App):
         dirpathmovies = self.dirpathmovies
         self.title = 'Splitfloat :: ' + dirpathmovies
         print('dirpathmovies:', dirpathmovies)
-        exten = ('.gif', '.GIF')
-        dirthumbs = os.path.join(dirpathmovies, 'Thumbails')
-        print('dirthumbs:', dirthumbs)
+        exten = ('.mp4', '.flv', '.avi') 
         self.box.ids.box.clear_widgets()
-        if os.path.exists(dirthumbs):
-            for fe in os.listdir(dirthumbs):
+        if os.path.exists(dirpathmovies):
+            for fe in os.listdir(dirpathmovies):
                 if fe.endswith(exten):
-                    fex = os.path.abspath(os.path.join(dirthumbs, fe))
+                    fex = os.path.abspath(os.path.join(dirpathmovies, fe))
                     print(fex)
                     self.files.append(fex)
                     # Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
@@ -324,8 +339,8 @@ class SampleApp(App):
     
     @mainthread
     def update_box_imagen(self, file, *largs):
-        self.box.ids.box.add_widget(Splitfloat(source=file, anim_delay= -1))
-        # title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
+        self.box.ids.box.add_widget(Splitfloat(url=file, anim_delay= -1))
+        self.title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
         # print('>> long: ', title)
         self.total += 1
         self.box.ids.lbnota.text = str(self.total)
