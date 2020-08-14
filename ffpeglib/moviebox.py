@@ -361,11 +361,11 @@ class MovieBox:
                                 for root, dirs, files in os.walk(wfd):
                                     for fi in filter(lambda x: re.match(pattern, x), files):
                                         print(fi)
-                                        img = Image.open(os.path.join(root, fi)).copy()
+                                        img = Image.open(os.path.join(root, fi))
                                         os.remove(os.path.join(root, fi))
             except Exception as e:
                 print('Exception make_cadencia:', str(e.args))
-        return img
+        return img.copy()
 
     def add_dato(self, block=None):
         ''' add list of dictionary datos from another file or files json 
@@ -488,7 +488,9 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--image', type=int,
                         help='extract from video file a number of images')
     parser.add_argument('-t', '--time', type=int,
-                        help='extract from video file a image at time: box -f path_to_file -t time')         
+                        help='extract from video file a image at time: box -f path_to_file -t time')
+    parser.add_argument('-o', '--out', type=str,
+                        help='dir for out image: box -f path_to_file -t time -o full_name_file_image')
     parser.add_argument('--version', action='version', version='%(prog)s '+str(__version__))
     args = parser.parse_args()
 
@@ -598,7 +600,11 @@ if __name__ == '__main__':
             if args.time:
                 ''' box -f path_to_file -t time '''
                 img = video.extract_image(time=args.time)
-                p_img = os.path.join(ruta, 'prueba.png')
+                if args.out:
+                    '-o full_name_image'
+                    p_img = os.path.join(args.out)
+                else:
+                    p_img = os.path.join(ruta, 'prueba.png')
                 img.save(p_img)
 
 
