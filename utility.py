@@ -9,20 +9,19 @@ __email__ = 'afhernani@gmail.com'
 __apply__ = 'for kvthumb'
 __version__ = 1.3
 
-def lunch_video_default(pathfile):
-    #obtener el nombre del fichero de video
-    _video_name = os.path.basename(pathfile).split("_thumbs_")[0]
-    _video = os.path.join(os.path.dirname(pathfile), './../',  _video_name)
+def lunch_video_default(url):
+    ''' lunch video system default '''
+    _video = url
     print('video ->', _video)
     if os.path.isfile(_video):
         thread = Thread(target=open, args=(_video,))
         thread.daemon = True
         thread.start()
 
-def lunch_video(pathfile):
+def lunch_ffplay(url):
+    ''' lunch video with viewer ffplay '''
     #obtener el nombre del fichero de video
-    _video_name = os.path.basename(pathfile).split("_thumbs_")[0]
-    _video = os.path.join(os.path.dirname(pathfile), './../',  _video_name)
+    _video = url
     print('video ->', _video)
     if os.path.isfile(_video):
         thread = Thread(target=tarea, args=("ffplay " + "\"" + _video + "\"",))
