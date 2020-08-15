@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-import os, sys
+import os, sys, subprocess
 from threading import Thread
 
 __autor__ = 'Hernani Aleman Ferraz'
 __email__ = 'afhernani@gmail.com'
 __apply__ = 'for kvthumb'
-__version__ = 1.2
+__version__ = 1.3
 
 def lunch_video_default(pathfile):
     #obtener el nombre del fichero de video
@@ -15,7 +15,7 @@ def lunch_video_default(pathfile):
     _video = os.path.join(os.path.dirname(pathfile), './../',  _video_name)
     print('video ->', _video)
     if os.path.isfile(_video):
-        thread = Thread(target=tarea, args=( "\"" + _video + "\"",))
+        thread = Thread(target=open, args=(_video,))
         thread.daemon = True
         thread.start()
 
@@ -33,7 +33,17 @@ def lunch_video(pathfile):
 def tarea(args=None):
     if not args:
         return
-    os.system(args)
+    os.startfile(args)
+
+# @staticmethod
+def open(file=None):
+    if not file: return
+    if sys.platform == "win32":
+        os.startfile(file)
+    else:
+        opener ="open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, file])
+
 
 EXTS = ('.mp4', '.MP4', '.avi', '.AVI', '.flv', '.FLV', '.mpg', '.MPG')
 
