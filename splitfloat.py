@@ -82,8 +82,8 @@ class Splitfloat(HoverBehavior, Image):
             self.touched = True
             if touch.is_double_tap:
                 print('double:', self.source)
-                from utility import lunch_video
-                lunch_video(self.source)
+                from utility import lunch_ffplay
+                lunch_ffplay(self.url)
             return True
         return super(Splitfloat, self).on_touch_down(touch)
 
