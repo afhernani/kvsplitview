@@ -112,9 +112,9 @@ class Splitfloat(HoverBehavior, Image):
             if self.interval > self.duration-self.loop_time:
                 self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.interval)
-            Clock.schedule_once(partial(self.push_image, image), 1.5)
+            Clock.schedule_once(partial(self.push_image, image))
             # self.push_image(image=image)
-            sleep(1.5)
+            sleep(2)
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
@@ -330,7 +330,8 @@ class SampleApp(App):
         # print('files:', self.files)
         print('path:', path, 'filenames:', filenames)
         self.files=[]
-        threading.Thread(target=self.load_thread, daemon=True).start()
+        self.load_thread()
+        # threading.Thread(target=self.load_thread, daemon=True).start()
         # pasando con argumentos, .
         # threading.Thread(target=self.load_thread, args=(argumeto,), daemon=True).start()
 
@@ -358,7 +359,7 @@ class SampleApp(App):
         try:
             for file in files:
                 self.update_box_imagen(file)
-                sleep(0.5)
+                sleep(1.5)
         except:
             print('exception in start load thread from app')
     
@@ -367,7 +368,7 @@ class SampleApp(App):
     @mainthread
     def update_box_imagen(self, file, *largs):
         self.box.ids.box.add_widget(Splitfloat(url=file, anim_delay= -1))
-        self.title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
+        # self.title = 'Splitfloat :: ' + self.dirpathmovies + ' :: ' + str(len(self.files))
         # print('>> long: ', title)
         self.total += 1
         self.box.ids.lbnota.text = str(self.total)
@@ -467,34 +468,3 @@ class SampleApp(App):
 if __name__ == '__main__':
     SampleApp().run()
 
-
-"""
-Image(
-source= 'image.gif', 
-anim_delay= 0,
-mipmap= True,
-allow_stretch= True)
-
-I believe this may help you, I had a series of png files that I wanted to animate into an 
-explosion, and this was a game where the explosions were constant. Initially, every time 
-the animation took place, the game stalled and stuttered horribly. This is what I did to get 
-my game to run smoothly. I zipped the png files, and used the following code to preload them, 
-which I placed in the __init__ method of the Screen widget that the images appeared on.
-
-load_zipped_png_files = Image(
-    source = 'explosion.zip', 
-    anim_delay = 0,
-    allow_stretch = True, 
-    keep_ratio = False,
-    keep_data = True)
-
-I believe the keep_data option allows for the preloading of the 
-images( into a cache I imagine ), which saves the program from having to reload 
-them every time they are used.
-
-Now it could be that I am mistaken about the role keep_data is playing here 
-( and if someone reading this knows better, please do correct me ), but zipping 
-the files and using them in this way definitely made the animations acceptably smooth. 
-You could test it with and without keep_data = True and figure it out yourself.
-
-"""
