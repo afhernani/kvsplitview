@@ -32,7 +32,7 @@ def lunch_ffplay(url):
 def tarea(args=None):
     if not args:
         return
-    os.startfile(args)
+    os.system(args)
 
 # @staticmethod
 def open(file=None):
