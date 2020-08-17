@@ -38,7 +38,7 @@ class Splitfloat(HoverBehavior, Image):
         self.url = None if url is None else url
         self.moviebox = None
         self.duration = self.loop_time = self.interval = 0.0
-        self.num_visionado = 15
+        self.num_visionado = 26
         self.thr, self.animation = None, False
         super(Splitfloat, self).__init__(**kwargs)
         if self.url:
@@ -48,6 +48,10 @@ class Splitfloat(HoverBehavior, Image):
             self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.loop_time)
             self.push_image(image=image)
+
+    def __del__(self):
+        ''' body of destructor '''
+        self.automation = False
 
     @mainthread
     def push_image(self, image, *args):
@@ -101,6 +105,10 @@ class Splitfloat(HoverBehavior, Image):
         print("You are in, though this point", self.border_point, self.source)
         # self.anim_delay= 1
         self.animation = True
+        Clock.schedule_once(self.my_anim, 1.5)
+        
+        
+    def my_anim(self, dts):
         self.thr = threading.Thread(target=self.start_animation, args=(self.url,), daemon=True)
         self.thr.start()
         
@@ -113,8 +121,9 @@ class Splitfloat(HoverBehavior, Image):
                 self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.interval)
             Clock.schedule_once(partial(self.push_image, image))
+            # partial(self.push_image, image)
             # self.push_image(image=image)
-            sleep(2)
+            sleep(0.8)
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
@@ -400,6 +409,12 @@ class SampleApp(App):
         with open(self.setingfile, 'w') as configfile:
             config.write(configfile)
         print('Write config file')
+        # vamos a detener todas las tareas
+        boxes = self.box.ids.box
+        childrens= boxes.children[:]
+        for child in childrens:
+            child.thr = None
+        sys.exit(1)
     
     sizewindow =''
     
