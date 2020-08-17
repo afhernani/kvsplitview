@@ -361,11 +361,11 @@ class MovieBox:
                                 for root, dirs, files in os.walk(wfd):
                                     for fi in filter(lambda x: re.match(pattern, x), files):
                                         print(fi)
-                                        img = Image.open(os.path.join(root, fi))
+                                        img = Image.open(os.path.join(root, fi)).copy()
                                         os.remove(os.path.join(root, fi))
             except Exception as e:
                 print('Exception make_cadencia:', str(e.args))
-        return img.copy()
+        return img
 
     def add_dato(self, block=None):
         ''' add list of dictionary datos from another file or files json 
