@@ -341,8 +341,8 @@ class SampleApp(App):
         print('path:', path, 'filenames:', filenames)
         self.files=[]
         self.isloadfiles = False
-        while self.th.isAlife(): print('.', end='')
-        print('.')
+        while self.tr.is_alive(): print('.', end='')
+        print('ended load')
         self.isloadfiles = True
         self.load_thread()
         # threading.Thread(target=self.load_thread, daemon=True).start()
@@ -353,7 +353,7 @@ class SampleApp(App):
         from functools import partial
         self.total = 0
         dirpathmovies = self.dirpathmovies
-        self.title = 'Splitfloat :: ' + dirpathmovies
+        title = 'Splitfloat :: ' + dirpathmovies
         print('dirpathmovies:', dirpathmovies)
         exten = ('.mp4', '.flv', '.avi') 
         self.box.ids.box.clear_widgets()
@@ -361,11 +361,12 @@ class SampleApp(App):
             for fe in os.listdir(dirpathmovies):
                 if fe.endswith(exten):
                     fex = os.path.abspath(os.path.join(dirpathmovies, fe))
-                    print(fex)
+                    # print(fex)
                     self.files.append(fex)
                     # Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
                     # self.box.ids.box.add_widget(Splitfloat(source=fex, anim_delay= 1))
-        self.title += r' :: ' + str(len(self.files))
+        self.title = title + ' :: ' + str(len(self.files))
+        Window.set_title(self.title)
         self.tr = threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True)
         self.tr.start()
 
