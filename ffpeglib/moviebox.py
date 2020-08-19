@@ -21,7 +21,7 @@ class Boxd:
                         "time": 0.0, "fps": 0.0, "width": 1, "height": 1,
                         "bitrate": 7, "num": 1, "remove": True, "file": "unknown",
                         "path_file": ".", "exists": False, "sucess": False,
-                        "code_frame": "unknown", "working_file": "Thumbails"
+                        "code_frame": "unknown", "working_file": ".Thumbails"
                       } if datos is None else datos
     
         if kwargs is not None:
@@ -52,7 +52,7 @@ class Boxd:
             if os.path.isdir(topath):
                 tofileMovie = os.path.join(topath, self.box['file'])
                 if self.fileMovie == tofileMovie: return
-                tofilegifpath = os.path.join(topath, 'Thumbails')
+                tofilegifpath = os.path.join(topath, '.Thumbails')
                 if not os.path.exists(tofilegifpath): os.mkdir(tofilegifpath)
                 tofilegif = os.path.join(tofilegifpath, self.namegif)
                 try:
@@ -154,7 +154,7 @@ class MovieBox:
                         "exists": False,
                         "sucess": False,
                         "code_frame": "unknown",
-                        "working_file": "Thumbails"
+                        "working_file": ".Thumbails"
                       } if datos is None else datos
         self.source = os.getcwd() if source is None else os.path.abspath(source)
         if source is None:
@@ -190,7 +190,7 @@ class MovieBox:
                 self.datos['sucess'] = False
 
     def _work_file(self):
-        self.datos['working_file'] = os.path.join(self.datos['path_file'] ,'Thumbails')
+        self.datos['working_file'] = os.path.join(self.datos['path_file'] ,'.Thumbails')
         import uuid
         name = str(uuid.uuid4()) + '-%04d.png'
         self.datos['code_frame'] = name
@@ -350,7 +350,7 @@ class MovieBox:
                         command.extend(['-loglevel', 'quiet' , '-y', '-ss', str(lasso), '-i', 
                                         filein, '-vframes', '1',
                                         frames, '-hide_banner'])
-                        print('Extract ->', command)
+                        # print('Extract ->', command)
                         self.runCommand(command)
                         # cargamos la imagen
                         if f['remove']:
@@ -360,9 +360,9 @@ class MovieBox:
                                 # print('remove:')
                                 for root, dirs, files in os.walk(wfd):
                                     for fi in filter(lambda x: re.match(pattern, x), files):
-                                        print(fi)
+                                        # print(fi)
                                         img = Image.open(os.path.join(root, fi)).copy()
-                                        os.remove(os.path.join(root, fi))
+                                        # os.remove(os.path.join(root, fi))
             except Exception as e:
                 print('Exception make_cadencia:', str(e.args))
         return img
@@ -374,7 +374,7 @@ class MovieBox:
                 block : list of datos = [ { "time": 0.0, "fps": 0.0, "width": 1,
                             "height": 1, "bitrate": 7, "num": 1, "remove": True,
                             "file": "unknown", "path_file": ".", "exists": False,
-                            "sucess": False, "code_frame": "unknown","working_file": "Thumbails"
+                            "sucess": False, "code_frame": "unknown","working_file": ".Thumbails"
                             } ]
             here don't check is date redunant
         '''
