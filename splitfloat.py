@@ -295,7 +295,7 @@ class SampleApp(App):
         selected = self.selected_splitfloat()
         all_archives = self._createlistselected(selected=selected)
         if self.path_job is None:
-            self.path_job =os.path.dirname(all_archives[0].movie)
+            self.path_job =os.path.dirname(all_archives[0])
         for item in all_archives:
             print('selected ->>', item)
         Copy(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
@@ -305,7 +305,7 @@ class SampleApp(App):
         selected = self.selected_splitfloat()
         all_archives = self._createlistselected(selected=selected)
         if self.path_job is None:
-            self.path_job =os.path.dirname(all_archives[0].movie)
+            self.path_job =os.path.dirname(all_archives[0])
         for item in all_archives:
             print('selected ->>', item)
         Move(files=all_archives, on_dismiss=self.my_callback, path=self.path_job)
@@ -317,8 +317,7 @@ class SampleApp(App):
     def _createlistselected(self, selected=[])->[]:
         todos_los_archivos =  []
         for item in selected:
-            box = Box(picture=item.source)
-            todos_los_archivos.append(box)
+            todos_los_archivos.append(item.url)
         return todos_los_archivos
 
     def dismiss_popup(self, *args):
