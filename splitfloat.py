@@ -271,6 +271,8 @@ class SampleApp(App):
     setingfile = 'seting.ini'
     title ='Splitfloat'
     path_job = StringProperty(None)
+    tr = None # tarea de carga de ficheros
+    isloadfiles = True # cargar ficheros from directorio a true 
     
     def build(self):
         self.files=[]
@@ -338,6 +340,10 @@ class SampleApp(App):
         # print('files:', self.files)
         print('path:', path, 'filenames:', filenames)
         self.files=[]
+        self.isloadfiles = False
+        while self.th.isAlife(): print('.', end='')
+        print('.')
+        self.isloadfiles = True
         self.load_thread()
         # threading.Thread(target=self.load_thread, daemon=True).start()
         # pasando con argumentos, .
@@ -360,7 +366,8 @@ class SampleApp(App):
                     # Clock.schedule_once(partial(self.update_box_imagen, str(fex)), 0.5)
                     # self.box.ids.box.add_widget(Splitfloat(source=fex, anim_delay= 1))
         self.title += r' :: ' + str(len(self.files))
-        threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True).start()
+        self.tr = threading.Thread(target=self.start_load_thread, args=(self.files,), daemon=True)
+        self.tr.start()
 
     def start_load_thread(self, files=[]):
         from time import sleep
@@ -368,6 +375,7 @@ class SampleApp(App):
             for file in files:
                 self.update_box_imagen(file)
                 sleep(1.5)
+                if not self.isloadfiles: break
         except:
             print('exception in start load thread from app')
     
