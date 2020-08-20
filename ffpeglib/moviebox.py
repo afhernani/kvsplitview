@@ -18,7 +18,7 @@ __all__ = ('Boxd', 'MovieBox')
 class Boxd:
     def __init__(self, datos=None, **kwargs):
         self.box = {
-                        "time": 0.0, "fps": 0.0, "width": 1, "height": 1,
+                        "id":'xxx', "time": 0.0, "fps": 0.0, "width": 1, "height": 1,
                         "bitrate": 7, "num": 1, "remove": True, "file": "unknown",
                         "path_file": ".", "exists": False, "sucess": False,
                         "code_frame": "unknown", "working_file": ".Thumbails"
@@ -86,6 +86,7 @@ class Boxd:
         else:
             print(f"Hei!!, one of files {self.fileMovie} - {self.filegif} , do not exist for to move")
 
+    @staticmethod
     def hashfile(self, path, blocksize = 65536):
         '''read file and return its hasher 
         paramters:
@@ -191,8 +192,10 @@ class MovieBox:
 
     def _work_file(self):
         self.datos['working_file'] = os.path.join(self.datos['path_file'] ,'.Thumbails')
-        import uuid
-        name = str(uuid.uuid4()) + '-%04d.png'
+        # import uuid
+        name = os.path.splitext(self.datos['file'])[0]
+        # name = str(uuid.uuid4()) + '-%04d.png'
+        name += '-%04d.png'
         self.datos['code_frame'] = name
     
     def __str__(self, *args):
@@ -337,8 +340,6 @@ class MovieBox:
                     if i:
                         frames = os.path.join(wfd, i)
                         filein = os.path.join(f['path_file'], f['file'])
-                        out = f['file'] + '_thumbs_0000.gif'
-                        out = os.path.join(wfd, out)
 
                         command = ['ffmpeg']
                         valor = f['time']
