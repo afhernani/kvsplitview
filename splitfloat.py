@@ -389,7 +389,10 @@ class SampleApp(App):
         dirpathmovies = self.dirpathmovies
         title = 'Splitfloat :: ' + dirpathmovies
         print('dirpathmovies:', dirpathmovies)
-        exten = ('.mp4', '.flv', '.avi') 
+        exten = ('.mp4', '.flv', '.avi', '.mpg', '.mkv', 
+                 '.webm', '.ts', '.mov', '.MP4', '.FLV',
+                 '.MPG', '.AVI', '.MKV', 'WEBM', '.MOV',
+                 '.TS')
         self.box.ids.box.clear_widgets()
         if os.path.exists(dirpathmovies):
             for fe in os.listdir(dirpathmovies):
