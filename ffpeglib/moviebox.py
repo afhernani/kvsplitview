@@ -282,7 +282,7 @@ class MovieBox:
                             # vamos a borrar los ficheros de imagen segun remove
                             if f['remove']:
                                 code = i.split('-%04d')[0]
-                                pattern = '^' + code
+                                pattern = '^' + code + '-'
                                 # mypath = f['working_file']
                                 print('remove:')
                                 for root, dirs, files in os.walk(wfd):
@@ -357,12 +357,12 @@ class MovieBox:
                         # cargamos la imagen
                         if f['remove']:
                                 code = i.split('-%04d')[0]
-                                pattern = '^' + code
+                                pattern = '^' + code + '-'
                                 # mypath = f['working_file']
                                 # print('remove:')
                                 for root, dirs, files in os.walk(wfd):
                                     for fi in filter(lambda x: re.match(pattern, x), files):
-                                        # print(fi)
+                                        print(fi)
                                         img = Image.open(os.path.join(root, fi)).copy()
                                         # os.remove(os.path.join(root, fi))
             except Exception as e:
