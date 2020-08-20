@@ -143,6 +143,7 @@ class MovieBox:
     def __init__(self, source=None, datos=None, block=None):
         self.block ={'thumbs': []} if block is None else block
         self.datos = {
+                        "id": 'xxx',
                         "time": 0.0,
                         "fps": 0.0,
                         "width": 1,
@@ -280,7 +281,7 @@ class MovieBox:
                             self.runCommand(command)
                             # vamos a borrar los ficheros de imagen segun remove
                             if f['remove']:
-                                code = i.split('-')[0]
+                                code = i.split('-%04d')[0]
                                 pattern = '^' + code
                                 # mypath = f['working_file']
                                 print('remove:')
@@ -355,7 +356,7 @@ class MovieBox:
                         self.runCommand(command)
                         # cargamos la imagen
                         if f['remove']:
-                                code = i.split('-')[0]
+                                code = i.split('-%04d')[0]
                                 pattern = '^' + code
                                 # mypath = f['working_file']
                                 # print('remove:')
@@ -372,7 +373,7 @@ class MovieBox:
         ''' add list of dictionary datos from another file or files json 
             to present block 
             parameter:
-                block : list of datos = [ { "time": 0.0, "fps": 0.0, "width": 1,
+                block : list of datos = [ { "id": 'xx', "time": 0.0, "fps": 0.0, "width": 1,
                             "height": 1, "bitrate": 7, "num": 1, "remove": True,
                             "file": "unknown", "path_file": ".", "exists": False,
                             "sucess": False, "code_frame": "unknown","working_file": ".Thumbails"
