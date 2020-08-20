@@ -26,6 +26,7 @@ from hpopup import Copy, Move, Remove, Rename, Box
 from ffpeglib import Boxd, MovieBox
 from kivy.core.image import Image as CoreImage
 from functools import partial
+from datetime import timedelta
 
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
@@ -34,6 +35,7 @@ __version__ = 0.1
 
 class Splitfloat(HoverBehavior, Image):
     def __init__(self, url, **kwargs):
+        # self.bind(mouse_pos=self.on_mouse_pos)
         self.selected = None
         self.url = None if url is None else url
         self.moviebox = None
@@ -48,10 +50,12 @@ class Splitfloat(HoverBehavior, Image):
             self.interval = self.loop_time
             image = self.moviebox.extract_image(time=self.loop_time)
             self.push_image(image=image)
+            self.tooltip = Tooltip(text=str(timedelta(seconds=self.duration)))
 
     def __del__(self):
         ''' body of destructor '''
         self.automation = False
+        Clock.unschedule(self.my_anim)
 
     @mainthread
     def push_image(self, image, *args):
@@ -63,6 +67,23 @@ class Splitfloat(HoverBehavior, Image):
         image_bytes.seek(0)
         self._coreimage = CoreImage(image_bytes, ext='png')
         self.texture = self._coreimage.texture
+
+    def on_mouse_pos(self, *args):
+        if not self.get_root_window():
+            return
+        pos = args[1]
+        self.tooltip.pos = pos
+        Clock.unschedule(self.display_tooltip) # cancel scheduled event since I moved the cursor
+        self.close_tooltip() # close if it's opened
+        if self.collide_point(*self.to_widget(*pos)):
+            Clock.schedule_once(self.display_tooltip, 1)
+        return super(Splitfloat, self).on_mouse_pos(*args)
+            
+    def close_tooltip(self, *args):
+        Window.remove_widget(self.tooltip)
+    
+    def display_tooltip(self, *args):
+        Window.add_widget(self.tooltip)
 
     def on_press(self):
         # self.source = 'atlas://data/images/defaulttheme/checkbox_on'
@@ -104,6 +125,7 @@ class Splitfloat(HoverBehavior, Image):
     def on_enter(self, *args):
         print("You are in, though this point", self.border_point, self.source)
         # self.anim_delay= 1
+        Clock.unschedule(self.my_anim)
         self.animation = True
         Clock.schedule_once(self.my_anim, 1.5)
         
@@ -149,7 +171,20 @@ class Splitfloat(HoverBehavior, Image):
             self.selected = None
 
 
+class Tooltip(Label):
+    pass
+
 Builder.load_string('''
+<Tooltip>:
+    size_hint: None, None
+    size: self.texture_size[0]+5, self.texture_size[1]+5
+    canvas.before:
+        Color:
+            rgb: 0.2, 0.2, 0.2
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
 <ContentSplits>:
     orientation:'vertical'
     ScrollView:
@@ -421,8 +456,7 @@ class SampleApp(App):
         boxes = self.box.ids.box
         childrens= boxes.children[:]
         for child in childrens:
-            child.thr = None
-        sys.exit(1)
+            del child
     
     sizewindow =''
     
