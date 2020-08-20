@@ -35,7 +35,6 @@ __version__ = 0.1
 
 class Splitfloat(HoverBehavior, Image):
     def __init__(self, url, **kwargs):
-        # self.bind(mouse_pos=self.on_mouse_pos)
         self.selected = None
         self.url = None if url is None else url
         self.moviebox = None
