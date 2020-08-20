@@ -87,7 +87,7 @@ class Boxd:
             print(f"Hei!!, one of files {self.fileMovie} - {self.filegif} , do not exist for to move")
 
     @staticmethod
-    def hashfile(self, path, blocksize = 65536):
+    def hashfile(path, blocksize = 65536):
         '''read file and return its hasher 
         paramters:
             path -  this is actual name of the file
@@ -105,7 +105,7 @@ class Boxd:
     def hash_rename(self):
         source = self.fileMovie
         if os.path.exists(source):
-            hash_name_file = self.hashfile(path=source) + self.exts
+            hash_name_file = Boxd.hashfile(path=source) + self.exts
             self.rename(hash_name_file)
             ''' hash_name_file_gif =hash_name_file + '_thumbs_0000.gif'
             path_to_newname_file = os.path.join(self.box['path_file'], hash_name_file)
