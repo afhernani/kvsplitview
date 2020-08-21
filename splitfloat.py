@@ -374,10 +374,11 @@ class SampleApp(App):
         # print('files:', self.files)
         print('path:', path, 'filenames:', filenames)
         self.files=[]
-        self.isloadfiles = False
-        while self.tr.is_alive(): print('.', end='')
-        print('ended load')
-        self.isloadfiles = True
+        if self.tr:
+            self.isloadfiles = False
+            while self.tr.is_alive(): print('.', end='')
+            print('ended load')
+            self.isloadfiles = True
         self.load_thread()
         # threading.Thread(target=self.load_thread, daemon=True).start()
         # pasando con argumentos, .
@@ -441,6 +442,8 @@ class SampleApp(App):
             # inicializa la lista con directorio duardao
             # threading.Thread(target=self.load_thread, daemon=True).start()
             self.load_thread()
+        else:
+            self.dirpathmovies = os.getcwd()
 
     def on_stop(self):
         '''
