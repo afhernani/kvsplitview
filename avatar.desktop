@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Avatar
+GenericName=lunch kvcomic from WDatos
+Path=/media/hernani/WDatos/Share/afhernani.com/kivy/afhernani.com/kvcomic
+Exec=python3 splitfloat.py
+Icon=/media/hernani/WDatos/Share/afhernani.com/kivy/afhernani.com/kvcomic/image/avatar.png
+NoDisplay=false
+Terminal=true
+Categories=Utility;FileTools;
+StartupNotify=true
