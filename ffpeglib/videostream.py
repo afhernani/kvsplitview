@@ -12,8 +12,9 @@ import os
 
 __author__ = 'Hernani Aleman Ferraz'
 __email__ = 'afhernani@gmail.com'
-__apply__ = 'Flash - player'
-__version__ = '1.2'
+__apply__ = 'Flash - player, kvcomic'
+__version__ = '2'
+__all__ = ('VideoStream')
 
 class VideoStream:
     def __init__(self, video_source=None):
