@@ -17,11 +17,11 @@ __version__ = '2'
 __all__ = ('VideoStream')
 
 class VideoStream:
-    def __init__(self, video_source=None):
+    def __init__(self, source=None):
         ff_opts = {'paused': True, 'autoexit': False}  # Audio options
-        self.video_surce = video_source
+        self.source = source
         # Open the video source
-        self.player = MediaPlayer(video_source, ff_opts=ff_opts)
+        self.player = MediaPlayer(source, ff_opts=ff_opts)
         # TODO: colocar pausa de tiempo para cargas mediaplayer y obtener los datos
         # conseguir el frame rate para la sincronizacion self.dalay
         while self.player.get_metadata()['src_vid_size'] == (0, 0):
@@ -113,7 +113,7 @@ class VideoStream:
     def seek(self, pts=None, relative=False, accurate=False):
         if not pts:
             return
-        self.player.seek(pts, relative=False, accurate=False)
+        self.player.seek(pts, relative=relative, accurate=accurate)
 
     def snapshot(self, road=None):
         '''
@@ -128,7 +128,7 @@ class VideoStream:
             time_str = time.strftime("%d-%m-%Y-%H-%M-%S")
             frame_name  = f"frame-{time_str}.jpg"
             if not road:
-                ruta = os.path.dirname(self.video_surce)
+                ruta = os.path.dirname(self.source)
                 name_out = os.path.join(ruta, frame_name)
             else:
                 name_out = os.path.join(road, frame_name)
