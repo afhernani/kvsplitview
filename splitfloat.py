@@ -30,8 +30,8 @@ from datetime import timedelta
 
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
-__apply__ = 'kvcomic app for gif about viedo in carpet'
-__version__ = 0.1
+__apply__ = 'kvcomic with ffpyplayer'
+__version__ = 2.1
 
 class Splitfloat(HoverBehavior, Image):
     def __init__(self, url, **kwargs):
