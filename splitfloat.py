@@ -21,51 +21,89 @@ from kivy.core.window import Window
 from kivy.config import ConfigParser, Config
 from kivy.graphics import Line
 import configparser
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty
 from hpopup import Copy, Move, Remove, Rename, Box
 from ffpeglib import Boxd, MovieBox
 from kivy.core.image import Image as CoreImage
 from functools import partial
 from datetime import timedelta
+from ffpeglib import VideoStream
+from kivy.graphics import *
+# from PIL import Image, ImageDraw
 
 __author__='hernani'
 __email__ = 'afhernani@gmail.com'
 __apply__ = 'kvcomic with ffpyplayer'
 __version__ = 2.1
 
-class Splitfloat(HoverBehavior, Image):
+
+class ImageR(Image):
+    angle = NumericProperty(0)
+
+    def __init__(self, angle=180, **kwargs):
+        super(ImageR, self).__init__(**kwargs)
+        self.angle = angle
+
+
+class Splitfloat(HoverBehavior, ImageR):
     def __init__(self, url, **kwargs):
         self.selected = None
         self.url = None if url is None else url
-        self.moviebox = None
+        self.video = self.state = None
         self.duration = self.loop_time = self.interval = 0.0
-        self.num_visionado = 26
+        self.num_visionado = 30
         self.thr, self.animation = None, False
+
         super(Splitfloat, self).__init__(**kwargs)
+        
         if self.url:
-            self.moviebox = MovieBox(source=self.url)
-            self.duration = self.moviebox.datos['time']
+            self.video = VideoStream(source=self.url)
+            self.duration = self.video.duration
             self.loop_time = self.duration/(self.num_visionado + 1)
             self.interval = self.loop_time
-            image = self.moviebox.extract_image(time=self.loop_time)
-            self.push_image(image=image)
+            self.video.seek(pts=self.loop_time, relative=False)
+            self.state, self.interval, self.image = self.video.get_frame()
+            self.video.toggle_pause()
+            self.push_image(image=self.image)
             self.tooltip = Tooltip(text=str(timedelta(seconds=self.duration)))
 
     def __del__(self):
         ''' body of destructor '''
         self.automation = False
         Clock.unschedule(self.my_anim)
+        del self.video
 
     @mainthread
     def push_image(self, image, *args):
+        from kivy.graphics.texture import Texture
+        from kivy.graphics.context_instructions import Rotate
+        from ffpyplayer.pic import Image as FFpyImage
         self.image = None if image is None else image
         if self.image is None:
-            self.image = self.moviebox.CreateImg()
-        image_bytes = io.BytesIO()
-        self.image.save(image_bytes, 'png')
-        image_bytes.seek(0)
-        self._coreimage = CoreImage(image_bytes, ext='png')
-        self.texture = self._coreimage.texture
+            from utility import CreateImg
+            self.image =  CreateImg()
+            image_bytes = io.BytesIO()
+            self.image.save(image_bytes, 'png')
+            image_bytes.seek(0)
+            self._coreimage = CoreImage(image_bytes, ext='png')
+            self.texture = self._coreimage.texture
+        else:
+            size = self.image.get_size()
+            texture = Texture.create(size=size, colorfmt='rgb', bufferfmt='ubyte')
+            # self.image.get_linesizes(keep_align=True)
+            arr = self.image.to_memoryview()[0] # array image
+            # img = FFpyImage(plane_buffers=[self.image.to_bytearray()], pix_fmt='rgb24', size=size)
+            # datos = self.image.to_bytearray()
+            # image_bytes = io.BytesIO(arr)
+            # image_bytes.seek(0)
+            # self._coreimage = CoreImage(image_bytes, ext='png')
+            # self._coreimage.save('prueba.png')
+            # buf = b''.join(map(chr, arr)) # array to a ubyte string
+            texture.blit_buffer(arr)
+            # im = CoreImage(texture)
+            self.texture = texture
+            # self.texture = self._coreimage.texture
+            
 
     def on_mouse_pos(self, *args):
         if not self.get_root_window():
@@ -126,6 +164,7 @@ class Splitfloat(HoverBehavior, Image):
         # self.anim_delay= 1
         Clock.unschedule(self.my_anim)
         self.animation = True
+        self.video.toggle_pause()
         Clock.schedule_once(self.my_anim, 1.5)
         
         
@@ -136,21 +175,29 @@ class Splitfloat(HoverBehavior, Image):
     def start_animation(self, url):
         # Falta: comprobar la url -
         from time import sleep
+        self.interval += self.loop_time
+            
+        if self.interval > self.duration-self.loop_time:
+            self.video.seek(pts=self.loop_time, relative=False)
+        else:
+            self.video.seek(pts=self.interval, relative=False)
+        
         while self.animation:    
-            self.interval += self.loop_time
-            if self.interval > self.duration-self.loop_time:
-                self.interval = self.loop_time
-            image = self.moviebox.extract_image(time=self.interval)
-            Clock.schedule_once(partial(self.push_image, image))
+            self.image = None
+            while self.image is None:
+                self.state, self.interval, self.image = self.video.get_frame()
+            # print('state:', self.state, 'interval:', self.interval)
+            Clock.schedule_once(partial(self.push_image, self.image))
             # partial(self.push_image, image)
             # self.push_image(image=image)
-            sleep(0.8)
+            sleep(0.1)
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
         # self.anim_delay= -1
         # if self.thr.isAlive:
         self.animation = False
+        self.video.toggle_pause()
             
 
     def select(self):
@@ -172,8 +219,19 @@ class Splitfloat(HoverBehavior, Image):
 
 class Tooltip(Label):
     pass
-
+   
+    
 Builder.load_string('''
+<ImageR>:
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: self.angle
+            axis: (0, 0, 1)
+            origin: self.center
+    canvas.after:
+        PopMatrix
+
 <Tooltip>:
     size_hint: None, None
     size: self.texture_size[0]+5, self.texture_size[1]+5
@@ -225,16 +283,16 @@ Builder.load_string('''
     # size_hint: None, None
     size: '300sp', '200sp'
     size_hint_x: None
+    font_size: '20dp'
+    #Rotate:
+    #    angle:180
+    #    origin: self.center
     # height: '300dp'
     # with: '300dp'
-    font_size: '20dp'
     # canvas.before:
-    #    Color:
-    #        rgb: 1,1,1
-    #    Rectangle:
-    #        size: self.size
-    #        pos: self.pos
-    # Image:
+    #    Rotate:
+    #        angle: 180
+    #Image:
     #    pos: root.pos
     #    size: root.size
     #    source: 'bbw.gif'
