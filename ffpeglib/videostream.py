@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from ffpyplayer.player import MediaPlayer
+from ffpyplayer.pic import Image as PicImage
 from ffpyplayer import pic
 try:
-    from PIL import Image
+    from PIL import Image as PilImage
 except ImportError:
-    from pil import Image
+    from pil import Image as PilImage
 import time
 import os
 
@@ -46,7 +47,7 @@ class VideoStream:
         while cond:
             self.l_frame, self.val = self.player.get_frame()
             if self.val == 'eof':
-                print('can not open source: ', video_source)
+                print('can not open source: ', source)
                 break
             elif self.l_frame is None:
                 time.sleep(0.01)
@@ -138,7 +139,7 @@ class VideoStream:
     # Release the video source when the object is destroyed
     def __del__(self):
         self.player.close_player()
-        print('__del__')
+        # print('__del__')
 
 
 if __name__ == '__main__':
