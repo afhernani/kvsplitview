@@ -3,6 +3,7 @@
 
 import os, sys, subprocess
 from threading import Thread
+from PIL import Image, ImageDraw
 
 __autor__ = 'Hernani Aleman Ferraz'
 __email__ = 'afhernani@gmail.com'
@@ -89,6 +90,17 @@ def items_only_a(path=None):
     # print('elementos solo en b -->', f)
     return c, f
 
+
+def CreateImg()->Image:
+    im = Image.new('RGBA', (320, 240), (0, 0, 0, 255)) 
+    draw = ImageDraw.Draw(im)
+    p1 = (0, 0, im.size[0], im.size[1])
+    p2 = (0, im.size[1], im.size[0], 0)
+    draw.line(p1, fill=(255,0,0), width=20)
+    draw.line(p2, fill=(255,0,0), width=20)
+    # im.save('x.png')
+    # os.startfile('x.png')
+    return im
 
 if __name__ == '__main__':
     print('items_only_a ---------------------------------')
