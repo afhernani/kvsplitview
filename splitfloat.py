@@ -62,7 +62,9 @@ class Splitfloat(HoverBehavior, ImageR):
             self.loop_time = self.duration/(self.num_visionado + 1)
             self.interval = self.loop_time
             self.video.seek(pts=self.loop_time, relative=False)
-            self.state, self.interval, self.image = self.video.get_frame()
+            poss = self.loop_time * 3 ; self.image = None
+            while self.image is None:
+                self.state, self.interval, self.image = self.video.get_frame()
             self.video.toggle_pause()
             self.push_image(image=self.image)
             self.tooltip = Tooltip(text=str(timedelta(seconds=self.duration)))
@@ -176,8 +178,8 @@ class Splitfloat(HoverBehavior, ImageR):
         # Falta: comprobar la url -
         from time import sleep
         self.interval += self.loop_time
-            
-        if self.interval > self.duration-self.loop_time:
+        print(self.url, '->', self.interval)    
+        if self.interval >= self.duration or self.state=='eof':
             self.video.seek(pts=self.loop_time, relative=False)
         else:
             self.video.seek(pts=self.interval, relative=False)
@@ -186,6 +188,8 @@ class Splitfloat(HoverBehavior, ImageR):
             self.image = None
             while self.image is None:
                 self.state, self.interval, self.image = self.video.get_frame()
+                if self.state == 'eof':
+                    self.interval = self.loop_time
             # print('state:', self.state, 'interval:', self.interval)
             Clock.schedule_once(partial(self.push_image, self.image))
             # partial(self.push_image, image)
