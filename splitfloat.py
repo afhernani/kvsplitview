@@ -439,6 +439,10 @@ class SampleApp(App):
             self.isloadfiles = False
             while self.tr.is_alive(): print('.', end='')
             print('ended load')
+            boxes = self.box.ids.box
+            childrens= boxes.children[:]
+            for child in childrens:
+                del child
             self.isloadfiles = True
         self.load_thread()
         # threading.Thread(target=self.load_thread, daemon=True).start()
