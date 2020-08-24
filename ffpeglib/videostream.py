@@ -4,10 +4,7 @@
 from ffpyplayer.player import MediaPlayer
 from ffpyplayer.pic import Image as PicImage
 from ffpyplayer import pic
-try:
-    from PIL import Image as PilImage
-except ImportError:
-    from pil import Image as PilImage
+from PIL import Image as PilImage
 import time
 import os
 
@@ -124,9 +121,9 @@ class VideoStream:
         if img is not None:
             size = img.get_size()
             arr = img.to_memoryview()[0] # array image
-            img = Image.frombytes("RGB", size, arr.memview)
+            img = PilImage.frombytes("RGB", size, arr.memview)
             # vamos a guardar esto.
-            time_str = time.strftime("%d-%m-%Y-%H-%M-%S")
+            time_str = time.strftime("-%H-%M-%S")
             frame_name  = f"frame-{time_str}.jpg"
             if not road:
                 ruta = os.path.dirname(self.source)
