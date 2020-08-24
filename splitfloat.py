@@ -78,7 +78,6 @@ class Splitfloat(HoverBehavior, ImageR):
     @mainthread
     def push_image(self, image, *args):
         from kivy.graphics.texture import Texture
-        from kivy.graphics.context_instructions import Rotate
         from ffpyplayer.pic import Image as FFpyImage
         self.image = None if image is None else image
         if self.image is None:
