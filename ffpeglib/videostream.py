@@ -68,35 +68,13 @@ class VideoStream:
         if self.val == 'eof':
             # condicion final fichero, salimos if and while
             # self.player.toggle_pause() # ponemos en pause
-            return self.val, None, None 
+            return self.val, 0.0, None 
         elif self.l_frame is None:
             time.sleep(0.01)
-            return self.val, None, None
+            return self.val, 0.0, None
         else:
-            import math
             self._imagen, self.pts = self.l_frame
             return self.val, self.pts, self._imagen
-            # w, h = self._imagen.get_size()
-            # linesize = [int(math.ceil(w * 3 / 32.) * 32)]
-            # self._imagen = pic.Image(plane_buffers=[bytes(b' ') * (h * linesize[0])],
-            #             pix_fmt=self._imagen.get_pixel_format(), size=(w, h), linesize=linesize)
-            # self._imagen.get_linesizes(keep_align=True)
-            
-            # if self.new_size is not None:
-            #     sws = None
-            #     n_w , n_h = self.new_size
-            #     if n_w > n_h:
-            #         sws = pic.SWScale(w, h, self._imagen.get_pixel_format(), oh=n_h)
-            #     else:
-            #         sws = pic.SWScale(w, h, self._imagen.get_pixel_format(), ow=n_w)
-            #     self._imagen = sws.scale(self._imagen)
-
-            # size = self._imagen.get_size()
-            # arr = self._imagen.to_memoryview()[0] # array image
-            # self.imagen = Image.frombytes("RGB", size, arr.memview)
-            # print('>>> videostream::get_frame()::self.pts ->', self.pts)
-
-        
 
     def toggle_pause(self):
         '''
@@ -108,10 +86,32 @@ class VideoStream:
         except:
             pass
     
-    def seek(self, pts=None, relative=False, accurate=False):
-        if not pts:
-            return
-        self.player.seek(pts, relative=relative, accurate=accurate)
+    def seek(self, pts, relative=True, seek_by_bytes='auto', accurate=True):
+        '''
+        Seeks to the desired timepoint as close as possible while not exceeding 
+        that time.
+
+            Parameters
+                pts: float
+                    The timestamp to seek to (in seconds).
+                relative: bool
+                    Whether the pts parameter is interpreted as the 
+                    time offset from the current stream position 
+                    (can be negative if True).
+                seek_by_bytes: bool or 'auto'
+                    Whether we seek based on the position in bytes 
+                    or in time. In some instances seeking by bytes may 
+                    be more accurate (don’t ask me which). If 'auto', 
+                    the default, it is automatically decided based 
+                    on the media.
+                accurate: bool
+                    Whether to do finer seeking if we didn’t seek directly
+                    to the requested frame. This is likely to be slower 
+                    because after the coarser seek, we have to walk through 
+                    the frames until the requested frame is reached. 
+                    If paused or we reached eof this is ignored. Defaults to True.
+        '''
+        self.player.seek(pts, relative=relative, seek_by_bytes=seek_by_bytes, accurate=accurate)
 
     def snapshot(self, road=None):
         '''
