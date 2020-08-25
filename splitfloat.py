@@ -60,11 +60,16 @@ class Splitfloat(HoverBehavior, ImageR):
             self.video = VideoStream(source=self.url)
             self.duration = self.video.duration
             self.loop_time = self.duration/(self.num_visionado + 1)
+            # print('loop:', self.loop_time)
             self.interval = self.loop_time
-            self.video.seek(pts=self.loop_time, relative=False)
-            poss = self.loop_time * 3 ; self.image = None
+            pts = self.loop_time*10; self.image = None
+            self.video.seek(pts=pts, relative=True, accurate=False)
+            # print('splitfloat - pts:', pts, 'interval:', self.interval)
             while self.image is None:
-                self.state, self.interval, self.image = self.video.get_frame()
+                try:
+                    self.state, self.interval, self.image = self.video.get_frame()
+                except Exception as e:
+                    print(str(e.args))
             self.video.toggle_pause()
             self.push_image(image=self.image)
             self.tooltip = Tooltip(text=str(timedelta(seconds=self.duration)))
@@ -165,7 +170,7 @@ class Splitfloat(HoverBehavior, ImageR):
         # self.anim_delay= 1
         Clock.unschedule(self.my_anim)
         self.animation = True
-        self.video.toggle_pause()
+        # self.video.toggle_pause()
         Clock.schedule_once(self.my_anim, 1.5)
         
         
@@ -176,20 +181,21 @@ class Splitfloat(HoverBehavior, ImageR):
     def start_animation(self, url):
         # Falta: comprobar la url -
         from time import sleep
+        self.video.toggle_pause()
         self.interval += self.loop_time
-        print(self.url, '->', self.interval)    
+        # print(self.url, '->', self.loop_time, self.interval)    
         if self.interval >= self.duration or self.state=='eof':
-            self.video.seek(pts=self.loop_time, relative=False)
+            self.video.seek(pts=self.loop_time, relative=True, accurate=False)
         else:
-            self.video.seek(pts=self.interval, relative=False)
-        
+            self.video.seek(pts=self.interval, relative=False, accurate=False)
+        sleep(0.1)
         while self.animation:    
             self.image = None
             while self.image is None:
                 self.state, self.interval, self.image = self.video.get_frame()
                 if self.state == 'eof':
-                    self.interval = self.loop_time
-            # print('state:', self.state, 'interval:', self.interval)
+                    self.video.seek(pts=self.loop_time, relative=False, accurate=False)
+            #print('state:', self.state, 'interval:', self.interval)
             Clock.schedule_once(partial(self.push_image, self.image))
             # partial(self.push_image, image)
             # self.push_image(image=image)
