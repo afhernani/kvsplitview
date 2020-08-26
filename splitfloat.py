@@ -98,6 +98,8 @@ class Splitfloat(HoverBehavior, ImageR):
             texture = Texture.create(size=size, colorfmt='rgb', bufferfmt='ubyte')
             # self.image.get_linesizes(keep_align=True)
             arr = self.image.to_memoryview()[0] # array image
+            if arr is None:
+                return
             # img = FFpyImage(plane_buffers=[self.image.to_bytearray()], pix_fmt='rgb24', size=size)
             # datos = self.image.to_bytearray()
             # image_bytes = io.BytesIO(arr)
@@ -170,7 +172,8 @@ class Splitfloat(HoverBehavior, ImageR):
         # self.anim_delay= 1
         Clock.unschedule(self.my_anim)
         self.animation = True
-        # self.video.toggle_pause()
+        if not self.video.player.get_frame()[1] == 'paused':
+            self.video.toggle_pause()
         Clock.schedule_once(self.my_anim, 1.5)
         
         
