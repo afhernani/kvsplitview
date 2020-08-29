@@ -63,16 +63,21 @@ class Splitfloat(HoverBehavior, ImageR):
             # print('loop:', self.loop_time)
             self.interval = self.loop_time
             pts = self.loop_time*10; self.image = None
+            self.video.toggle_pause()
             self.video.seek(pts=pts, relative=True, accurate=False)
-            # print('splitfloat - pts:', pts, 'interval:', self.interval)
+            Clock.schedule_once(self.callback, 2)
             while self.image is None:
                 try:
                     self.state, self.interval, self.image = self.video.get_frame()
                 except Exception as e:
                     print(str(e.args))
             self.video.toggle_pause()
-            self.push_image(image=self.image)
+            Clock.schedule_once(partial(self.push_image, self.image))
             self.tooltip = Tooltip(text=str(timedelta(seconds=self.duration)))
+
+    def callback(self, dt):
+        Clock.unschedule(self.callback)
+        pass
 
     def __del__(self):
         ''' body of destructor '''
