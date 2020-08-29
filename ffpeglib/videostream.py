@@ -84,7 +84,7 @@ class VideoStream:
         '''
         try: # Stopping audio
             self.player.toggle_pause()
-            # self.player = None
+            self.pause = self.player.get_pause()
         except:
             pass
     
