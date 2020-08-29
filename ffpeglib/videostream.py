@@ -26,15 +26,15 @@ class VideoStream:
         # conseguir el frame rate para la sincronizacion self.dalay
         while self.player.get_metadata()['src_vid_size'] == (0, 0):
             time.sleep(0.01)
-        data  = self.player.get_metadata()
-        print('data -->', data)
-        self.f_rate = int(data['frame_rate'][0]/data['frame_rate'][1])
+        self.metadata  = self.player.get_metadata()
+        print('data -->', self.metadata)
+        self.f_rate = int(self.metadata['frame_rate'][0]/self.metadata['frame_rate'][1])
         print('delay -> ', self.f_rate)
-        self.w, self.h = data['src_vid_size']
+        self.w, self.h = self.metadata['src_vid_size']
         print('WxH -> ', self.w, self.h)
         self.pts = self.player.get_pts() # Returns the elapsed play time. float
         print('pts ->', self.pts)
-        self.duration = data['duration']
+        self.duration = self.metadata['duration']
         print('duration', self.duration)
         self.pause = self.player.get_pause() # Returns whether the player is paused.
         print('pause ->', self.pause)
