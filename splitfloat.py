@@ -93,6 +93,8 @@ class Splitfloat(HoverBehavior, ImageR):
                 print(str(e.args))
         self.video.toggle_pause()
         self.interval = posission
+        self.video.player.close_player()
+        self.video = None
         Clock.schedule_once(partial(self.push_image, self.image))
 
     def callback(self, dt):
@@ -108,7 +110,7 @@ class Splitfloat(HoverBehavior, ImageR):
     @mainthread
     def push_image(self, image, *args):
         from kivy.graphics.texture import Texture
-        from ffpyplayer.pic import Image as FFpyImage
+        # from ffpyplayer import Image as FFpyImage
         self.image = None if image is None else image
         if self.image is None:
             from utility import CreateImg
@@ -196,11 +198,16 @@ class Splitfloat(HoverBehavior, ImageR):
         print("You are in, though this point", self.border_point, self.source)
         # self.anim_delay= 1
         Clock.unschedule(self.my_anim)
-        self.animation = True
         # si el video está en play lo detenemos
-        if not self.video.pause:
-            self.video.toggle_pause()
-        Clock.schedule_once(self.my_anim)
+        '''if not self.video.pause:
+            self.video.toggle_pause()'''
+        if self.video and self.thr.is_alive:
+            print('on_enter, one')
+            self.animation = True
+        elif self.video is None:
+            print('on enter dos')
+            self.animation = True
+            Clock.schedule_once(self.my_anim)
         
         
     def my_anim(self, dts):
@@ -210,34 +217,39 @@ class Splitfloat(HoverBehavior, ImageR):
     def start_animation(self, url):
         # Falta: comprobar la url -
         from time import sleep
+        self.video = VideoStream(source=self.url)
         posission = 0.0
         if self.video.pause: self.video.toggle_pause()
-        # print(self.url, '->', self.loop_time, self.interval)    
+        print(self.url, '->', 'interval:', self.interval, 'loop:', self.loop_time)    
         if self.interval >= self.duration or self.state=='eof':
             self.video.seek(pts=self.loop_time, relative=False, accurate=False)
+            sleep(1)
         else:
             self.video.seek(pts=self.loop_time, relative=True, accurate=False)
-        sleep(0.4)
+            sleep(1.5)
         while self.animation:    
             self.image = None
             while self.image is None:
                 self.state, posission, self.image = self.video.get_frame()
                 if self.state == 'eof':
                     self.video.seek(pts=self.loop_time, relative=False, accurate=False)
-                    sleep(0.4)
+                    sleep(1)
             #print('state:', self.state, 'interval:', self.interval)
             Clock.schedule_once(partial(self.push_image, self.image))
             # partial(self.push_image, image)
             # self.push_image(image=image)
             sleep(self.state)
         self.interval = posission + self.loop_time
+        print(self.interval)
+        self.video.player.close_player()
+        self.video = None
 
     def on_leave(self, *args):
         print("You left through this point", self.border_point, self.source)
         # self.anim_delay= -1
         # if self.thr.isAlive:
         self.animation = False
-        self.video.toggle_pause()
+        # self.video.toggle_pause()
             
 
     def select(self):
