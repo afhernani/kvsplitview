@@ -225,17 +225,20 @@ class Splitfloat(HoverBehavior, ImageR):
             self.video.seek(pts=self.loop_time, relative=False, accurate=False)
             sleep(1)
         else:
-            self.video.seek(pts=self.loop_time, relative=True, accurate=False)
+            self.video.seek(pts=self.interval, relative=False, accurate=False)
             sleep(1.5)
         while self.animation:    
-            self.image = None
-            while self.image is None:
-                self.state, posission, self.image = self.video.get_frame()
-                if self.state == 'eof':
-                    self.video.seek(pts=self.loop_time, relative=False, accurate=False)
-                    sleep(1)
+            self.image = None   
+            self.state, posission, self.image = self.video.get_frame()
+            if self.state == 'eof':
+                self.video.seek(pts=self.loop_time, relative=False, accurate=False)
+                sleep(2)
+            elif posission < self.interval:
+                sleep(0.3)
+                continue
             #print('state:', self.state, 'interval:', self.interval)
-            Clock.schedule_once(partial(self.push_image, self.image))
+            elif self.image:
+                Clock.schedule_once(partial(self.push_image, self.image))
             # partial(self.push_image, image)
             # self.push_image(image=image)
             sleep(self.state)
