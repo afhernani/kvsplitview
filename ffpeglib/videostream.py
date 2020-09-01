@@ -41,6 +41,7 @@ class VideoStream:
         self.volume = self.player.get_volume() # Returns the volume of the audio. loat: A value between 0.0 - 1.0
         print('volume ->', self.volume)
         self.player.toggle_pause() # Toggles -alterna- the player’s pause state
+        self.pause = self.player.get_pause()
         # self.player.set_pause(False) # auses or un-pauses the file. state: bool
         cond = True
         while cond:
