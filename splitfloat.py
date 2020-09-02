@@ -223,6 +223,7 @@ class Splitfloat(HoverBehavior, ImageR):
         print(self.url, '->', 'interval:', self.interval, 'loop:', self.loop_time)    
         if self.interval >= self.duration or self.state=='eof':
             self.video.seek(pts=self.loop_time, relative=False, accurate=False)
+            self.interval = self.loop_time
             sleep(1)
         else:
             self.video.seek(pts=self.interval, relative=False, accurate=False)
@@ -232,9 +233,10 @@ class Splitfloat(HoverBehavior, ImageR):
             self.state, posission, self.image = self.video.get_frame()
             if self.state == 'eof':
                 self.video.seek(pts=self.loop_time, relative=False, accurate=False)
+                self.interval = self.loop_time
                 sleep(2)
             elif posission < self.interval:
-                sleep(0.3)
+                sleep(0.1)
                 continue
             #print('state:', self.state, 'interval:', self.interval)
             elif self.image:
