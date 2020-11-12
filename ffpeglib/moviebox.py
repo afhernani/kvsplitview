@@ -434,7 +434,10 @@ class MovieBox:
             if matches1:
                 print('fps ->', matches1['fps'])
                 frame_rate = matches1['fps'].split(b' ')[0]
-                self.datos['fps'] = float(frame_rate)
+                if frame_rate.isdigit():
+                    self.datos['fps'] = float(frame_rate)
+                else:
+                    self.datos['fps'] = 25
                 print('fps ->', self.datos['fps'])
 
             matches2 = re.search(b' (?P<width>\d+)x(?P<height>\d{2,4}[, ])', stdout)
